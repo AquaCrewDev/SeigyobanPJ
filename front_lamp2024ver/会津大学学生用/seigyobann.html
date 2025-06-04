@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script src="http://code.jquery.com/ui/1.9.2/jquery-ui.js"></script>
+
+<title>remote Switch robot UI</title>
+	<style>
+<!--
+		#rico {
+			position: absolute;
+			top:470px;
+			left:40px;
+		}
+		-->
+
+              #lamp1 {
+			position: absolute;
+			top:290px;
+			left:196px;
+		}
+
+              #lamp2 {
+			position: absolute;
+			top:293px;
+			left:450px;
+		}
+
+              #lamp3 {
+			position: absolute;
+			top:293px;
+			left:700px;
+		}
+         #img1 {
+			position: absolute;
+			top:447px;
+			left:235px;
+		}#img2 {
+			position: absolute;
+			top:450px;
+			left:485px;
+		}#img3 {
+			position: absolute;
+			top:450px;
+			left:740px;
+		}
+	</style>
+</head>
+
+<body>
+
+<img id="lamp1" src="0.png" width="80" height="80" border="0">
+<img id="lamp2" src="0.png">
+<img id="lamp3" src="0.png">
+
+<!--switch bou-->
+ <img id="img1" src="parpende.png" /><br>
+ <img id="img2" src="parpende.png" /><br>
+ <img id="img3" src="parpende.png" /><br>
+
+
+  <img src="./fig2.png" alt="" /><br><!--制御盤全体-->
+ <!--
+  <input type="submit" id="button" value ="Left on" onclick="buttonClick();" />
+  <input type="submit" id="button2" value ="Center on" onclick="buttonClick2();" />
+  <input type="submit" id="button3" value ="Right on" onclick="buttonClick3();" />
+  <input type="submit" id="button4" value ="Reset" onclick="buttonClick4();" /><br>
+-->
+<!-- スイッチを60度回転させる -->
+<!-- <input type="button" value="右へ60度回転" onclick="kaitenAll(1,60);">
+<input type="button" value="左へ60度回転" onclick="kaitenAll(1,-60);"><br>
+
+<input type="button" value="右へ60度回転" onclick="kaitenAll(2,60);">
+<input type="button" value="左へ60度回転" onclick="kaitenAll(2,-60);"><br>
+
+<input type="button" value="右へ60度回転" onclick="kaitenAll(3,60);">
+<input type="button" value="左へ60度回転" onclick="kaitenAll(3,-60);"><br>
+-->
+
+
+<!--
+  <input type="submit" id="switch" value ="switch2" onclick="changeIMG5();" />
+  <input type="submit" id="switch3" value ="switch3" onclick="changeIMG6();" />
+-->
+
+<script>
+
+//画像を配列に格納する
+var img = new Array();
+var img_bou = new Array();
+
+//ランプ画像読み込み
+img[0] = new Image();
+img[0].src = "./0.png"; //白
+img[1] = new Image();
+img[1].src = "./1.png"; //赤
+img[2] = new Image();
+img[2].src　= "./2.png"; //緑
+
+
+// date sid
+function loadJson(date,sid){
+    console.log("call json",date);
+    $.ajax({
+            url:"http://ellighttracker2.appspot.com/ellighttracker2?mode=j&date="+date+"&sid="+sid,
+            dataType: "json",
+            crossDomain:true,
+             timeout:1000,
+            success:parse_json
+    });
+}
+
+
+function parse_json(json,status) {
+	//var redCountArray = new Array(45);
+	//for(var i=0;i<json.data_lists.length;i++){
+                console.log(json.data_lists[0])
+		drawlamp1(json.data_lists[0]);
+		drawlamp2(json.data_lists[1]);
+		drawlamp3(json.data_lists[2]);
+                //console.log(json.data_lists[i]);
+
+	//}
+}
+
+//drawImage 1 ,2,3 とかにすればわけれる(functionを)
+function drawlamp1(data_list,count=false){
+
+for(var i=0;i<data_list.length;i++){
+   if(data_list[i].data==0){
+   var angle = 90;
+   document.getElementById("lamp1").src=img[0].src;
+   var e = document.getElementById("img1");
+   e.style.transform = "rotate(" + angle + "deg)";
+}else if(data_list[i].data==1){
+   var angle =120;
+   document.getElementById("lamp1").src=img[1].src;
+   var e = document.getElementById("img1");
+   e.style.transform = "rotate(" + angle + "deg)";
+}else if(data_list[i].data==2){
+   var angle = -60;
+   document.getElementById("lamp1").src=img[2].src;
+　 var e = document.getElementById("img1");
+   e.style.transform = "rotate(" + angle + "deg)";
+}
+
+}
+}
+
+function drawlamp2(data_list,count=false){
+
+for(var i=0;i<data_list.length;i++){
+   if(data_list[i].data==0){
+   var angle = 90;
+   document.getElementById("lamp2").src=img[0].src;
+   var e = document.getElementById("img2");
+   e.style.transform = "rotate(" + angle + "deg)";
+}else if(data_list[i].data==1){
+   var angle =120;
+   document.getElementById("lamp2").src=img[1].src;
+   var e = document.getElementById("img2");
+   e.style.transform = "rotate(" + angle + "deg)";
+}else if(data_list[i].data==2){
+   var angle = -60;
+   document.getElementById("lamp2").src=img[2].src;
+　 var e = document.getElementById("img2");
+   e.style.transform = "rotate(" + angle + "deg)";
+}
+}
+}
+
+function drawlamp3(data_list,count=false){
+
+for(var i=0;i<data_list.length;i++){
+   if(data_list[i].data==0){
+   var angle = 0;
+   document.getElementById("lamp3").src=img[0].src;
+   var e = document.getElementById("img3");
+   e.style.transform = "rotate(" + angle + "deg)";
+}else if(data_list[i].data==1){
+   var angle =120;
+   document.getElementById("lamp3").src=img[1].src;
+   var e = document.getElementById("img3");
+   e.style.transform = "rotate(" + angle + "deg)";
+}else if(data_list[i].data==2){
+   var angle = -60;
+   document.getElementById("lamp3").src=img[2].src;
+　 var e = document.getElementById("img3");
+   e.style.transform = "rotate(" + angle + "deg)";
+}
+
+}
+}
+
+
+loadJson("2021-01-19","Lab1");
+//画像を配列に格納する
+//var img = new Array();
+//var img_bou = new Array();
+
+/*
+//ランプ画像読み込み
+img[0] = new Image();
+img[0].src = "./0.png"; //白
+img[1] = new Image();
+img[1].src = "./1.png"; //赤
+img[2] = new Image();
+img[2].src　= "./2.png"; //緑
+*/
+
+/*
+//画像番号用のグローバル変数
+var cnt=0;
+
+
+//画像切り替え関数 button
+function changeIMG(){
+
+  //画像番号を進める
+  if (cnt == 2){
+    cnt=0;
+  }
+  else{
+    cnt++;
+  }
+
+  //画像を切り替える
+ 	if (cnt == 2){
+  	document.getElementById("lamp1").src=img[2].src;
+	}
+	if (cnt == 1){
+  	document.getElementById("lamp1").src=img[1].src;
+	}
+	if (cnt == 0){
+  	document.getElementById("lamp1").src=img[0].src;
+	}
+}
+//画像切り替え関数
+function changeIMG2(){
+
+  //画像番号を進める
+  if (cnt == 2){
+		cnt=0;
+	}else{
+		cnt++;
+	}
+
+  //画像を切り替える
+  document.getElementById("lamp2").src=img[cnt].src;
+}
+
+//画像切り替え関数
+function changeIMG3(){
+  //画像を切り替える
+  document.getElementById("lamp3").src=img[cnt].src;
+}
+
+var d = 0;
+function kaiten(x){
+	if(d+x <= 60 && d+x >= -60){
+		var e = document.getElementById("img1");
+		d = d + x;
+		//回転
+  	e.style.transform = "rotate(" + d + "deg)";
+        console.log("d:"+d)
+
+		//画像番号を進める
+		if (d == 60){
+			cnt=1;
+		}else if(d == 0){
+			cnt=0;
+		}else{
+			cnt=2;
+		}
+		//画像を切り替える
+		document.getElementById("lamp1").src=img[cnt].src;
+	}
+}
+
+var v = 0;
+function kaiten2(x){
+	if(v+x <= 60 && v+x >= -60){
+	  var e = document.getElementById("img2");
+
+		//回転
+		v = v + x;
+	  e.style.transform = "rotate(" + v + "deg)";
+
+		//画像番号を進める
+		if (d == 60){
+			cnt=1;
+		}else if(d == 0){
+			cnt=0;
+		}else{
+			cnt=2;
+		}
+	  //画像を切り替える
+	  document.getElementById("lamp2").src=img[cnt].src;
+	}
+}
+
+var r = 0;
+function kaiten3(x){
+	if(r+x <= 60 && r+x >= -60){
+	  var e = document.getElementById("img3");
+
+		//回転
+	  r = r + x;
+	  e.style.transform = "rotate(" + r + "deg)";
+
+		//画像番号を進める
+		if (r == 60){
+			cnt=1;
+		}else if(r == 0){
+			cnt=0;
+		}else{
+			cnt=2;
+		}
+
+	  //画像を切り替える
+	  document.getElementById("lamp3").src=img[cnt].src;
+	}
+}
+
+//kaiten1~3を１つの関数で動かせる
+//つまみの向き→左:赤、中央:白、右:緑
+var z = [0,0,0];
+function kaitenAll(num,x){
+	sub_deg = z[num-1]+x;
+	if(sub_deg <= 60 && sub_deg >= -60){
+	  var e = document.getElementById("img" +num);
+
+		//回転
+	  z[num-1] = sub_deg;
+	  e.style.transform = "rotate(" + z[num-1] + "deg)";
+
+		//画像番号を進める
+		if (z[num-1] == 60){
+			cnt=1;
+		}else if(z[num-1] == 0){
+			cnt=0;
+		}else{
+			cnt=2;
+		}
+
+	  //画像を切り替える
+	  document.getElementById("lamp"+num).src=img[cnt].src;
+	}
+}
+
+*/
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,24 @@
+天気予報のマーク
+https://www.jma.go.jp/bosai/common/image/bosai_forecast.svg
+
+ここで会津若松市の今日明日明後日の天気が取れる
+https://www.jma.go.jp/bosai/forecast/data/forecast/070000.json
+
+天気予報のiconのソース（使っていいのか？）
+https://www.jma.go.jp/bosai/forecast/img/300.svg
+
+時々の表示は矢印なし
+レスポンス確認済み
+100:晴れ
+101:晴れ 時々 くもり
+102:晴れ 一時 雨 (103)
+104:晴れ 一時 雪 (105)
+
+110:晴れ のち時々くもり
+
+210:くもり のち時々 晴れ
+212:曇りのち一時 雨
+
+https://www.jma.go.jp/bosai/forecast/data/overview_forecast/070000.json
+
+https://sitecreation.co.jp/tenkiyohou/

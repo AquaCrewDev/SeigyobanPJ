@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Please input Mqtt Data</title>
+  <link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/1.0.16/vue.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.11.2/moment.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/components/core-min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/components/hmac-min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/components/sha256-min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.js"></script>
+  <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+</head>
+<body>
+  <div id="app">
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <a class="navbar-brand mx-auto" href="#">{{ selectedLocation }} Data Input</a>
+        </div>
+        <div class="navbar-right">
+          <form class="navbar-form navbar-right form-inline">
+            <div class="form-group">
+              <select v-model="selectedLocation" class="form-control">
+                <option value="会津若松">会津若松</option>
+                <option value="北塩原">北塩原</option>
+                <option value="仮想空間">仮想空間</option>
+                <option value="仮想空間2">仮想空間2</option>
+              </select>
+            </div>
+            <button type="button" class="btn btn-success" @click="goToSeigyobann">Go to Seigyobann</button>
+          </form>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container mt-5">
+      <div class="card shadow-sm">
+        <div class="card-body text-center">
+          <h2 class="card-title mb-4">Please input {{ selectedLocation }} Data!</h2>
+          <div id="edit_area" class="alert alert-secondary" role="alert"></div>
+          <form id="mqttForm">
+            <div class="form-group">
+              <input type="text" name="say" id="say" class="form-control" placeholder="Enter something..." required>
+            </div>
+            <button type="submit" id="send" class="btn btn-primary btn-lg btn-block">Submit</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    var app = new Vue({
+      el: '#app',
+      data: {
+        selectedLocation: '会津若松',
+        messages: []
+      },
+      methods: {
+        goToSeigyobann: function() {
+          window.location.href = './seigyobann.html';
+        }
+      },
+      watch: {
+        selectedLocation: function (newVal) {
+          console.log("Selected location: " + newVal);
+        }
+      }
+    });
+
+    // MQTTエンドポイント生成用関数
+    function createEndpoint(regionName, awsIotEndpoint, accessKey, secretKey) {
+      var time = moment.utc();
+      var dateStamp = time.format('YYYYMMDD');
+      var amzdate = dateStamp + 'T' + time.format('HHmmss') + 'Z';
+      var service = 'iotdevicegateway';
+      var region = regionName;
+      var algorithm = 'AWS4-HMAC-SHA256';
+      var method = 'GET';
+      var canonicalUri = '/mqtt';
+      var host = awsIotEndpoint;
+
+      var credentialScope = dateStamp + '/' + region + '/' + service + '/' + 'aws4_request';
+      var canonicalQuerystring = 'X-Amz-Algorithm=AWS4-HMAC-SHA256';
+      canonicalQuerystring += '&X-Amz-Credential=' + encodeURIComponent(accessKey + '/' + credentialScope);
+      canonicalQuerystring += '&X-Amz-Date=' + amzdate;
+      canonicalQuerystring += '&X-Amz-SignedHeaders=host';
+
+      var canonicalHeaders = 'host:' + host + '\n';
+      var payloadHash = CryptoJS.SHA256('').toString(CryptoJS.enc.Hex);
+      var canonicalRequest = method + '\n' + canonicalUri + '\n' + canonicalQuerystring + '\n' + canonicalHeaders + '\nhost\n' + payloadHash;
+
+      var stringToSign = algorithm + '\n' +  amzdate + '\n' +  credentialScope + '\n' +  CryptoJS.SHA256(canonicalRequest).toString(CryptoJS.enc.Hex);
+      var signingKey = CryptoJS.HmacSHA256('aws4_request', CryptoJS.HmacSHA256(service, CryptoJS.HmacSHA256(region, CryptoJS.HmacSHA256(dateStamp, 'AWS4' + secretKey))));
+      var signature = CryptoJS.HmacSHA256(stringToSign, signingKey).toString(CryptoJS.enc.Hex);
+
+      canonicalQuerystring += '&X-Amz-Signature=' + signature;
+      return 'wss://' + host + canonicalUri + '?' + canonicalQuerystring;
+    }
+
+    // MQTTクライアントの初期化
+    var endpoint = createEndpoint(
+      '',
+      '',
+      '',
+      ''
+    );
+    var clientId = Math.random().toString(36).substring(7);
+    var client = new Paho.MQTT.Client(endpoint, clientId);
+
+    // 接続オプション
+    var connectOptions = {
+      useSSL: true,
+      timeout: 3,
+      mqttVersion: 4,
+      onSuccess: subscribe,
+      onFailure: function (err) {
+        console.error("Failed to connect: ", err);
+      }
+    };
+
+    // MQTT接続
+    client.connect(connectOptions);
+    client.onMessageArrived = onMessage;
+    client.onConnectionLost = function(e) {
+      console.log("Connection lost: ", e);
+    };
+
+    // トピックにサブスクライブ
+    function subscribe() {
+      client.subscribe("robot_project/aki150103/slider");
+      console.log("robot_project/aki150103/slider");
+    }
+
+    // フォーム送信時にメッセージを送信
+    document.getElementById('mqttForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      var say = document.getElementById('say').value;
+      var message = {
+        data: say,
+        location: app.selectedLocation
+      };
+      document.getElementById('edit_area').innerHTML = JSON.stringify(message);
+      send(JSON.stringify({ 'RTC.TimedCharSeq':{ tm: { sec: 0, nsec: 0 },data:say.value}}));
+      document.getElementById('say').value = '';
+    });
+
+    // メッセージ送信
+    function send(content) {
+      var message = new Paho.MQTT.Message(content);
+      message.destinationName = "robot_project/aki150103/slider";
+      client.send(message);
+      console.log("Message sent: ", content);
+    }
+
+    // メッセージ受信時
+    function onMessage(message) {
+      app.messages.push(message.payloadString);
+      console.log("Message received: ", message.payloadString);
+    }
+  </script>
+</body>
+</html>
+

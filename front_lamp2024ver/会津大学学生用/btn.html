@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>サンプル</title>
+</head>
+<body>
+
+<p>サンプルページです。</p>
+
+<input type="button" value="click" id="btn">
+
+<script>
+let btn = document.getElementById('btn');
+btn.addEventListener('click', function(){
+    window.setTimeout(function(){
+        alert('時間切れです');
+    }, 5000);
+});
+</script>
+
+</body>
+</html>

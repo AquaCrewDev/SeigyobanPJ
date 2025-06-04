@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="jp">
+  <head>
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"> <meta charset="UTF-8"> <meta http-equiv="X-UA-Compatible" content="IE=edge"> <script
+    src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script> <script src="http://code.jquery.com/ui/1.9.2/jquery-ui.js"></script> -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>会津大学</title>
+    <link rel="stylesheet" type="text/css" href="css/style.css"/>
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.9.2/themes/base/jquery-ui.css"/>
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"/>
+    <link rel="stylesheet" title="text/css" href="css/bootstrap.min.css.map"/>
+    <link rel="stylesheet" title="text/css" href="css/bootstrap-theme.min.css"/>
+    <link rel="stylesheet" title="text/css" href="css/bootstrap-theme.min.css.map"/>
+    <link rel="stylesheet" title="text/css" href="css/dashboard.css"/>
+    <link rel="stylesheet" href="css/main.css">
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <script src="./lib/moment-with-locales.min.js"></script>
+    <script src="./lib/moment-timezone-with-data-2010-2020.min.js"></script>
+    <script type="text/javascript" src="./lib/jquery-1.11.3.min.js"></script>
+    <script src="http://code.jquery.com/ui/1.9.2/jquery-ui.js"></script>
+    <script type="text/javascript" src="./lib/vue.min.js"></script>
+    <script type="text/javascript" src="js/datepicker.js"></script>
+    <script type="text/javascript" src="lib/bootstrap.min.js"></script>
+    <script type="text/javascript" src="./MQTT_runtime/mqttws31.js"></script>
+    <script src="./js/mobile_robot_ver2.js" type="text/javascript"></script>
+    <script src="./loader.js"></script>
+
+    <!-- スクリプト部分 -->
+    <script src="js/maketime.js" type="text/javascript"></script>
+    <script type="text/javascript"></script>
+
+    <!-- シークバー機能 -->
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.5.1/nouislider.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.5.1/nouislider.min.js"></script>
+
+    <title>remote Switch robot UI</title>
+    <style>
+      header {
+        display: flex;
+        width: 100%;
+        height: 100px;
+        color: #FFF;
+        background-color: #668ad8;
+        align-items: center;
+      }
+
+      .title {
+        margin-right: auto;
+      }
+
+      .btn-stitch {
+        display: inline-block;
+        padding: 0.5em 1em;
+        text-decoration: none;
+        background: #668ad8;
+        color: #FFF;
+        border-radius: 4px;
+        box-shadow: 0 0 0 5px #668ad8;
+        border: dashed 1px #FFF;
+      }
+
+      .btn-stitch:hover {
+        border: dotted 1px #FFF;
+      }
+      .menu-item {
+        list-style: none;
+        display: inline-block;
+        padding: 10px;
+      }
+
+      #noUiSlider {
+        width: 90%;
+        margin: 0 auto
+      }
+      #range {
+        margin-top: 1em;
+      }
+
+      #rico {
+        position: absolute;
+        top: 470px;
+        left: 40px;
+      }
+
+      #fig2 {
+        position: relative;
+      }
+
+      #lamp1 {
+        position: absolute;
+        top: 258px;
+        left: 190px;
+      }
+
+      #lamp2 {
+        position: absolute;
+        top: 258px;
+        left: 442px;
+      }
+
+      #lamp3 {
+        position: absolute;
+        top: 258px;
+        left: 694px;
+      }
+
+      #img1 {
+        position: absolute;
+        top: 418px;
+        left: 226px;
+      }
+      #img2 {
+        position: absolute;
+        top: 420px;
+        left: 477px;
+      }
+      #img3 {
+        position: absolute;
+        top: 418px;
+        left: 730px;
+      }
+      #img4 {
+			position: absolute;
+			top:450px;
+			left:25px;
+		}
+	  #img5 {
+			position: absolute;
+			top:460px;
+			left:65px;
+		}
+		
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <nav class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container-fluid">
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">Aqua Crew</a>
+          </div>
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav navbar-right">
+              <li>
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                  会津大学<b class="caret"></b>
+                </a>
+                <ul class="dropdown-menu">
+                  <li>
+                    <a href="./seigyobann.html">制御盤情報</a>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+            <form class="navbar-form navbar-right">
+              <div class="col-lg-6">
+                <div class="input-group">
+                  <input v-model="date" type="date" id="datepicker" class="form-control" placeholder="yy-mm-dd"/>
+                  <span class="input-group-btn">
+                    <button class="btn btn-default" type="button" v-on:click="submit">Go</button>
+                  </span>
+                </div>
+              </div>
+              <!-- <input type="text" class="form-control" placeholder="Search..."> -->
+            </form>
+          </div>
+        </div>
+      </nav>
+
+      <!-- <header> <h1 class="title">モック制御盤情報</h1> <nav class="nav"> <ul class="menu-group"></ul> </nav> </header> -->
+      <div>
+        <img id="fig2" src="./fig2.png" alt=""/>
+        <img id="lamp1" src="0.png" width="80" height="80" border="0">
+        <img id="lamp2" src="0.png" width="80" height="80" border="0">
+        <img id="lamp3" src="0.png" width="80" height="80" border="0">
+        <!--switchのつまみ-->
+        <img id="img1" src="parpende.png"/>
+        <img id="img2" src="parpende.png"/>
+        <img id="img3" src="parpende.png"/>
+      <!-- ロボット情報追加-->
+      <!--img4 ロボットの固定枠-->        
+        <img id="img4" src="robot1.png"　class ="s1" /><br>
+      <!--img5 動くロボット-->        
+        <div id="frame1">
+          <img id="img5" src="robot2.png" class="s2"/><br>    
+	</div>
+      </div>
+
+      <br><br>
+
+
+      <div id="noUiSlider">
+        <div id="slider-huge"></div>
+        <br><br>
+        <div id="huge-value"></div>
+        <br>
+        <!-- リアルタイムに数値を表示 -->
+        <p class="meter">
+          <span id="skip-value-nav-lower"></span>
+        </p>
+      </div>
+
+      <a href="./view.html" class="btn-stitch">viewへ</a>
+      <br><br>
+      <span id="view_time"></span>
+      <br>
+      <div id="shopinfo">
+
+        <br><br>
+        <button onclick="OnButtonClick1()">画像移動1を実行</button><br>
+        <button onclick="OnButtonClick2()">画像移動2を実行</button>
+        <button onclick="OnButtonClick3()">画像移動2を実行</button>
+
+        <script>
+          //画像を配列に格納する
+          var img = new Array();
+          var json_data;
+
+          //ランプ画像読み込み
+          img[0] = new Image();
+          img[0].src = "./0.png"; //白
+          img[1] = new Image();
+          img[1].src = "./1.png"; //赤
+          img[2] = new Image();
+          img[2].src = "./2.png"; //緑
+          
+          <!--ボタンを押されると移動-->
+          function OnButtonClick1() {
+            target = document.getElementById('img5');
+            target.style.left = 200 + "px";        
+            }
+            function OnButtonClick2() {
+            target = document.getElementById('img5');
+            target.style.left = 400 + "px";        
+            }
+            function OnButtonClick3() {
+            target = document.getElementById('img5');
+            target.style.left = 50 + "px";        
+            }                   
+
+          // date sid
+          function loadJson(sid, date) {
+            console.log("call json", date);
+            $.ajax({
+              url: "http://ellighttracker2.appspot.com/ellighttracker2?mode=j&date=" + date + "&sid=" + sid,
+              dataType: "json",
+              crossDomain: true,
+              timeout: 10000,
+              success: parse_json
+            });
+          }
+
+          /**
+           * update lamp img for No1~3.
+           * @param  json json                 json_data each dates
+           * @param  int counter               Slider position = json_data order
+           * @return Null
+           */
+          function drawlamps(json, counter) {
+            var e,angle;
+            rangeNavValues.innerHTML = json_data.data_lists[0][counter].Time;
+            // console.log(json_data.data_lists[0][counter].Time);
+            for (var i = 0; i < 3; i++) {
+              if (json.data_lists[i][counter].data == 0) {
+                angle = 0;
+                document.getElementById('lamp' +(i+1)).src = img[0].src;
+              } else if (json.data_lists[i][counter].data == 1) {
+                angle = 60;
+                document.getElementById('lamp' +(i+1)).src = img[1].src;
+              } else{
+                angle = 120;
+                document.getElementById('lamp' +(i+1)).src = img[2].src;
+              }
+              e = document.getElementById('img' +(i+1));
+              e.style.transform = "rotate(" + angle + "deg)";
+            }
+          }
+
+          //日付ID
+          document.getElementById("view_time").innerHTML = getNow();
+          function getNow() {
+            const youbi = [
+              "日",
+              "月",
+              "火",
+              "水",
+              "木",
+              "金",
+              "土"
+            ];
+            const date1 = new Date();
+            const date2 = date1.getFullYear() + "年" + (
+              date1.getMonth() + 1
+            ) + "月" + date1.getDate() + "日" + date1.getHours() + "時" + date1.getMinutes() + "分" + date1.getSeconds() + "秒" + date1.getMilliseconds() + "ミリ秒" + youbi[date1.getDay()] + "曜日";
+            // 0は日曜日～6は土曜日
+
+            console.log(date2);
+            // 2020年2月1日20時55分36秒809ミリ秒土曜日
+
+            const date3 = date1.getFullYear() + ("00" + (
+              date1.getMonth() + 1
+            )).slice(-2) + ("00" + (
+              date1.getDate()
+            )).slice(-2);
+            console.log(date3);
+            return date2;
+          }
+
+          //Reads today's data when the page is displayed
+          date = new Date();
+          now_date = date.getFullYear() + "-" + date.getMonth() + "-" + date.getDate();
+          console.log(now_date);
+          loadJson("Lab1", now_date); //If not, do not update anything
+
+          /**
+           * Save json and update slider, update lamps
+           * @param  json json
+           * @param  bool status    Success and ?
+           * @return Null
+           */
+          function parse_json(json, status) {
+            //var redCountArray = new Array(45); for(var i=0;i<json.data_lists.length;i++){
+            json_data = json;
+            console.log(status);
+            drawlamps(json_data,json_data.data_lists[0].length -1);
+            //Update slider range
+            bigValueSlider.noUiSlider.updateOptions({
+                start: json_data.data_lists[0].length -1,
+                range: {
+                    min: 0,
+                    max: json_data.data_lists[0].length -1
+                }
+            });
+          }
+
+          // Creating Sliders
+          var bigValueSlider = document.getElementById('slider-huge');
+          var rangeNavValues = document.getElementById('huge-value');
+          noUiSlider.create(bigValueSlider, {
+            start: 0,
+            step: 1,
+            range: {
+              min: 0,
+              max: 100 //sample size
+            },
+            pips: {
+              density: 5 //Display memory
+            }
+          });
+          // Call drawlamp to get the value to be changed in real time
+          bigValueSlider.noUiSlider.on('update', function (values, handle) {
+            drawlamps(json_data,Math.floor(values[handle]));
+          });
+
+        </script>
+      </div>
+    </body>
+  </html>
+  <script src="js/mainVue.js"></script>

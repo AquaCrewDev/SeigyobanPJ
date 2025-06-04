@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Please input Mqtt Data</title>
+  <!-- seigyobann.html に合わせた Bootstrap バージョン -->
+  <link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"/>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/1.0.16/vue.min.js" type="text/javascript"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.11.2/moment.min.js" type="text/javascript"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/components/core-min.js" type="text/javascript"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/components/hmac-min.js" type="text/javascript"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/components/sha256-min.js" type="text/javascript"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.js" type="text/javascript"></script>
+  <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+</head>
+<body>
+  <div id="app">
+    <!-- ヘッダー -->
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <a class="navbar-brand mx-auto" href="#">{{ selectedLocation }} Data Input</a>
+        </div>
+        <div class="navbar-right">
+          <!-- 横並びにするためにform-inlineクラスを追加 -->
+          <form class="navbar-form navbar-right form-inline">
+            <div class="form-group">
+              <select v-model="selectedLocation" class="form-control">
+                <option value="会津若松">会津若松</option>
+                <option value="北塩原">北塩原</option>
+                <option value="仮想空間">仮想空間</option>
+              </select>
+            </div>
+            <!-- ボタンを追加して横に並べる -->
+            <button type="button" class="btn btn-success" @click="goToSeigyobann">Go to Seigyobann</button>
+          </form>
+        </div>
+      </div>
+    </nav>
+
+    <!-- メインコンテンツ -->
+    <div class="container mt-5">
+      <div class="card shadow-sm">
+        <div class="card-body text-center">
+          <h2 class="card-title mb-4">Please input {{ selectedLocation }} Data!</h2>
+          <div id="edit_area" class="alert alert-secondary" role="alert"></div>
+          <form id="mqttForm">
+            <div class="form-group">
+              <input type="text" name="say" id="say" class="form-control" placeholder="Enter something..." required>
+            </div>
+            <button type="submit" id="send" class="btn btn-primary btn-lg btn-block">Submit</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    var app = new Vue({
+      el: '#app',
+      data: {
+        selectedLocation: '会津若松',
+        messages: []
+      },
+      methods: {
+        // ボタンのクリックでseigyobann.htmlへ遷移
+        goToSeigyobann: function() {
+          // seigyobann.html へ遷移する
+          window.location.href = './seigyobann.html';
+        }
+      },
+      watch: {
+        selectedLocation: function (newVal) {
+          console.log("Selected location: " + newVal);
+        }
+      }
+    });
+
+    document.getElementById('mqttForm').addEventListener('submit', function (e) {
+      e.preventDefault(); // フォームのデフォルト送信動作をキャンセル
+      var say = document.getElementById('say');
+      document.getElementById('edit_area').innerHTML = say.value;
+      send(JSON.stringify({ data: say.value, location: app.selectedLocation }));
+      say.value = '';
+
+      var dd = new Date();
+      console.log(say.value);
+    });
+
+    function SigV4Utils(){}
+
+    SigV4Utils.sign = function(key, msg) {
+      var hash = CryptoJS.HmacSHA256(msg, key);
+      return hash.toString(CryptoJS.enc.Hex);
+    };
+
+    SigV4Utils.sha256 = function(msg) {
+      var hash = CryptoJS.SHA256(msg);
+      return hash.toString(CryptoJS.enc.Hex);
+    };
+
+    SigV4Utils.getSignatureKey = function(key, dateStamp, regionName, serviceName) {
+      var kDate = CryptoJS.HmacSHA256(dateStamp, 'AWS4' + key);
+      var kRegion = CryptoJS.HmacSHA256(regionName, kDate);
+      var kService = CryptoJS.HmacSHA256(serviceName, kRegion);
+      var kSigning = CryptoJS.HmacSHA256('aws4_request', kService);
+      return kSigning;
+    };
+
+    function createEndpoint(regionName, awsIotEndpoint, accessKey, secretKey) {
+      var time = moment.utc();
+      var dateStamp = time.format('YYYYMMDD');
+      var amzdate = dateStamp + 'T' + time.format('HHmmss') + 'Z';
+      var service = 'iotdevicegateway';
+      var region = regionName;
+      var secretKey = secretKey;
+      var accessKey = accessKey;
+      var algorithm = 'AWS4-HMAC-SHA256';
+      var method = 'GET';
+      var canonicalUri = '/mqtt';
+      var host = awsIotEndpoint;
+
+      var credentialScope = dateStamp + '/' + region + '/' + service + '/' + 'aws4_request';
+      var canonicalQuerystring = 'X-Amz-Algorithm=AWS4-HMAC-SHA256';
+      canonicalQuerystring += '&X-Amz-Credential=' + encodeURIComponent(accessKey + '/' + credentialScope);
+      canonicalQuerystring += '&X-Amz-Date=' + amzdate;
+      canonicalQuerystring += '&X-Amz-SignedHeaders=host';
+
+      var canonicalHeaders = 'host:' + host + '\n';
+      var payloadHash = SigV4Utils.sha256('');
+      var canonicalRequest = method + '\n' + canonicalUri + '\n' + canonicalQuerystring + '\n' + canonicalHeaders + '\nhost\n' + payloadHash;
+
+      var stringToSign = algorithm + '\n' +  amzdate + '\n' +  credentialScope + '\n' +  SigV4Utils.sha256(canonicalRequest);
+      var signingKey = SigV4Utils.getSignatureKey(secretKey, dateStamp, region, service);
+      var signature = SigV4Utils.sign(signingKey, stringToSign);
+
+      canonicalQuerystring += '&X-Amz-Signature=' + signature;
+      return 'wss://' + host + canonicalUri + '?' + canonicalQuerystring;
+    }
+
+    var endpoint = createEndpoint(
+        ', // Your Region
+        '', // Require 'lowercamelcase'!!
+        '',
+        '');
+    var clientId = Math.random().toString(36).substring(7);
+    var client = new Paho.MQTT.Client(endpoint, clientId);
+    var connectOptions = {
+      useSSL: true,
+      timeout: 3,
+      mqttVersion: 4,
+      onSuccess: subscribe
+    };
+    client.connect(connectOptions);
+    client.onMessageArrived = onMessage;
+    client.onConnectionLost = function(e) { console.log(e) };
+
+    function subscribe() {
+      client.subscribe("test");
+      console.log("subscribed");
+    }
+
+    function send(content) {
+      var message = new Paho.MQTT.Message(content);
+      message.destinationName = "test";
+      client.send(message);
+      console.log("sent");
+    }
+
+    function onMessage(message) {
+      app.messages.push(message.payloadString);
+      console.log("message received: " + message.payloadString);
+    }
+  </script>
+</body>
+</html>
+

@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="jp">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>会津大学</title>
+    <link rel="stylesheet" type="text/css" href="css/style.css"/>
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.9.2/themes/base/jquery-ui.css"/>
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"/>
+    <link rel="stylesheet" title="text/css" href="css/bootstrap.min.css.map"/>
+    <link rel="stylesheet" title="text/css" href="css/bootstrap-theme.min.css"/>
+    <link rel="stylesheet" title="text/css" href="css/bootstrap-theme.min.css.map"/>
+    <link rel="stylesheet" title="text/css" href="css/dashboard.css"/>
+    <link rel="stylesheet" href="css/main.css">
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <script src="./lib/moment-with-locales.min.js"></script>
+    <script src="./lib/moment-timezone-with-data-2010-2020.min.js"></script>
+    <script type="text/javascript" src="./lib/jquery-1.11.3.min.js"></script>
+    <script src="http://code.jquery.com/ui/1.9.2/jquery-ui.js"></script>
+    <script type="text/javascript" src="./lib/vue.min.js"></script>
+    <script type="text/javascript" src="js/datepicker.js"></script>
+    <script type="text/javascript" src="lib/bootstrap.min.js"></script>
+    <script src="./loader.js"></script>
+
+    <!-- スクリプト部分 -->
+    <script src="js/maketime.js" type="text/javascript"></script>
+    <script type="text/javascript">
+
+      var arr_lamp = ''
+      var arr_time = new Array();
+      var arr_data = new Array();
+      var arr_data_time = new Array();
+      var arr_json = new Array();
+      var now = new Date();
+      //json用lamp情報
+      var lamp_json = new Array();
+
+      var Year = now.getFullYear();
+      var Month = now.getMonth() + 1;
+      var d_date = now.getDate();
+
+      dd_date = Year + "-" + (
+        "0" + Month
+      ).slice(-2) + "-" + (
+        "0" + d_date
+      ).slice(-2);
+
+      gray = 0;
+      green = 0;
+      red = 0;
+      yellow = 0;
+
+      cnt = 0;
+
+      //console.log(dd_date); function refresh() {   if (document.readyState == "complete") {       location.reload();   } } range function
+      const range = (start, end) => {
+        const list = [];
+        for (let i = start; i <= end; i++) {
+          list.push(i);
+        }
+        return list;
+      }
+      //実験用ダミーデータの作成
+      var l1 = [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23
+      ];
+      for (const i in l1) {
+        for (l3 in range(0, 59)) {
+          time = ("0" + i).slice(-2) + ":" + (
+            "0" + l3
+          ).slice(-2) + ":00";
+          data = "0,"
+          p = "{\"data\":0,\"Time\":" + dd_date + " " + time + "}"
+          arr_json.push(p);
+          if (i == 23 && l3 == 59) {
+            arr_json.pop(p);
+            p = "{\"data\":0,\"Time\":" + dd_date + " " + time + "}"
+            arr_json.push(p);
+          }
+
+          //  console.log(time); arr_time.push(time); arr_data.push(data);
+        }
+      }
+
+      //console.log("test"+arr_json) 配列の状態でデータを受け取る
+      arr_lamp = arr_json;
+
+      //console.log("arr_lamp:"+arr_lamp) date sid
+      function loadJson(sid, date) {
+        console.log("call json", date);
+        console.log("on v-on", sid);
+        cnt = 0;
+        $.ajax({
+          url: "http://ellighttracker2.appspot.com/ellighttracker2?mode=j&date=" + date + "&sid=" + sid,
+          dataType: "json",
+          crossDomain: true,
+          timeout: 10000,
+          success: parse_json
+        });
+        // setTimeout("refresh()", 1000000);
+
+      }
+      //実験の時のみ利用 画面ロードした時に自動実行 window.onload = function() { loadJson("2022-01-21","Lab1"); }
+
+      function parse_json(json, status) {
+        var redCountArray = new Array(45);
+        //console.log(json.data_lists.length);
+        drawLine(json.data_lists[0]);
+        drawLine(json.data_lists[1]);
+        drawLine(json.data_lists[2]);
+        //drawLine(arr_lamp);
+        // console.log("parse_json:" + arr_lamp);
+        //console.log("@"+json.data_lists[0]);
+        //console.log(JSON.stringify(json.data_lists[1])); #}
+      }
+
+
+      function drawLine(data_list, count = false) {
+        //function drawLine(data_list){
+       console.log("parse_json:" + JSON.stringify(data_list));
+       var dt = new Date();
+       var time_counter = 0;
+
+        var red_count = 0;
+
+        var canvas = document.getElementById('can');
+        //画面リサイズ
+        var ctx = canvas.getContext('2d');
+
+        if(cnt == 0) ctx.clearRect(0, 0, canvas.width, canvas.height); //canvasをクリア
+
+        ctx.font = '13px normal';
+        ctx.textAlign = 'left';
+        ctx.fillStyle = "black";
+        ctx.fillText('左側ランプ', 10, 10);
+
+        ctx.font = '13px normal';
+        ctx.textAlign = 'left';
+        ctx.fillStyle = "black";
+        ctx.fillText('中央ランプ', 10, 30);
+
+        ctx.font = '13px normal';
+        ctx.textAlign = 'left';
+        ctx.fillStyle = "black";
+        ctx.fillText('右側ランプ', 10, 50);
+
+        //var a = JSON.string(data_list) ; 稼働時間の計測
+        for (var i = 0; i < data_list.length; i++) {
+          if (data_list[i].data == 0) {
+            ctx.fillStyle = "gray";
+            gray++;
+          }
+          if (data_list[i].data == 1) {
+            ctx.fillStyle = "lightgreen";
+            green++;
+          }
+          if (data_list[i].data == 2) {
+            ctx.fillStyle = "red";
+            red++;
+          }
+          if (data_list[i].data == 3) {
+            ctx.fillStyle = "yellow";
+            yellow++;
+          }
+
+          dt = new Date(data_list[i].Time); //時間の取得
+          time_counter = dt.getHours()*60 + dt.getMinutes(); //分数の取得
+          // console.log(time_counter);
+          ctx.fillRect(200 + time_counter, cnt * 20, 1, 10); //１ピクセルで毎分の状態を表示
+         // console.log("i:"+i) console.log("cnt:"+cnt)
+
+        }
+
+        //色情報の更新
+        if(cnt == 0){
+          document.getElementById('leftgreen').innerHTML = green;
+          document.getElementById('leftred').innerHTML = red;
+          document.getElementById('leftyellow').innerHTML = yellow;
+        }else if(cnt == 1){
+          document.getElementById('centergreen').innerHTML = green;
+          document.getElementById('centerred').innerHTML = red;
+          document.getElementById('centeryellow').innerHTML = yellow;
+        }else if(cnt == 2){
+          document.getElementById('rightgreen').innerHTML = green;
+          document.getElementById('rightred').innerHTML = red;
+          document.getElementById('rightyellow').innerHTML = yellow;
+        }
+
+        cnt++; //カメラのidの数
+        console.log(cnt)
+        console.log("gray" + gray);
+        console.log("green" + green);
+        console.log("red" + red);
+        console.log("yellow" + yellow);
+        if (count === true) {
+          return red_count;
+        }
+        lamp_json.push(cnt);
+        lamp_json.push(gray);
+        lamp_json.push(green);
+        lamp_json.push(red);
+        lamp_json.push(yellow);
+
+        gray = 0;
+        green = 0;
+        red = 0;
+        yellow = 0;
+        //html内に表示
+        console.log(lamp_json);
+        //記入してしまうと ランプが一番上しか非表示されない
+        //var sampleArea = document.getElementById("sampleArea");
+        //sampleArea.innerHTML = lamp_json[2];
+      }
+
+      //loadJson("2021-01-19","Lab1");
+    </script>
+  </head>
+
+  <body>
+    <div id="app">
+      <nav class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container-fluid">
+          <div class="navbar-header">
+            <button type="button"
+                    class="navbar-toggle collapsed"
+                    data-toggle="collapse"
+                    data-target="#navbar"
+                    aria-expanded="false"
+                    aria-controls="navbar">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">Aqua Crew</a>
+          </div>
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav navbar-right">
+              <li>
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                  会津大学<b class="caret"></b>
+                </a>
+                <ul class="dropdown-menu">
+                  <li>
+                    <a href="./seigyobann.html">制御盤情報</a>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+            <form class="navbar-form navbar-right">
+              <div class="col-lg-6">
+                <div class="input-group">
+                  <input v-model="date" type="date" id="datepicker" class="form-control" placeholder="yy-mm-dd"/>
+                  <span class="input-group-btn">
+                    <button class="btn btn-default" type="button" v-on:click="submit">Go</button>
+                  </span>
+
+                </div>
+              </div>
+              <!-- <input type="text" class="form-control" placeholder="Search..."> -->
+            </form>
+          </div>
+        </div>
+      </nav>
+
+      <!-- col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main -->
+      <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+        <h1 class="page-header">会津大学内
+          <br>
+          研究室内制御盤
+          <br>
+          {{date}}</h1>
+
+        <svg id="svg"></svg>
+        <script src="js/maketime.js" type="text/javascript"></script>
+        <canvas id="can" width="1730" height="200"></canvas>
+        <canvas id="char" width="900" height="200"></canvas>
+
+        <h2 class="sub-header">稼働情報</h2>
+        <h4 class="sub-header">色情報について:赤色->稼働 緑色->停止 灰色->未使用</h2>
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>種別</th>
+                <th>緑(停止)[m]</th>
+                <!-- <th>月(回数)</th> -->
+                <th>赤(稼働)(m)</th>
+                <!-- <th>電流値(A)[基準値 7.5A</th> -->
+                <th>黄色(故障)(m)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>左側ランプ</td>
+                <td>
+                  <div id="leftgreen">0</div>
+                </td>
+                <td>
+                  <div id="leftred">0</div>
+                </td>
+                <td>
+                  <div id="leftyellow">0</div>
+                </td>
+              </tr>
+              <tr>
+                <td>中央ランプ</td>
+                <td>
+                  <div id="centergreen">0</div>
+                </td>
+                <td>
+                  <div id="centerred">0</div>
+                </td>
+                <td>
+                  <div id="centeryellow">0</div>
+                </td>
+
+              </tr>
+              <tr>
+                <td>右側ランプ</td>
+                <td>
+                  <div id="rightgreen">0</div>
+                </td>
+                <td>
+                  <div id="rightred">0</div>
+                </td>
+                <td>
+                  <div id="rightyellow">0</div>
+                </td>
+              </tr>
+
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="js/mainVue.js"></script>

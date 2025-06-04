@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="jp">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Remote Switch Robot UI - 会津大学</title> <!-- 初期タイトル -->
+    <link rel="stylesheet" type="text/css" href="css/style.css"/>
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.9.2/themes/base/jquery-ui.css"/>
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"/>
+    <link rel="stylesheet" title="text/css" href="css/bootstrap.min.css.map"/>
+    <link rel="stylesheet" title="text/css" href="css/bootstrap-theme.min.css"/>
+    <link rel="stylesheet" title="text/css" href="css/bootstrap-theme.min.css.map"/>
+    <link rel="stylesheet" title="text/css" href="css/dashboard.css"/>
+    <link rel="stylesheet" href="css/main.css">
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <script src="./lib/moment-with-locales.min.js"></script>
+    <script src="./lib/moment-timezone-with-data-2010-2020.min.js"></script>
+    <script type="text/javascript" src="./lib/jquery-1.11.3.min.js"></script>
+    <script src="http://code.jquery.com/ui/1.9.2/jquery-ui.js"></script>
+    <script type="text/javascript" src="./lib/vue.min.js"></script>
+    <script type="text/javascript" src="js/datepicker.js"></script>
+    <script type="text/javascript" src="lib/bootstrap.min.js"></script>
+    <script type="text/javascript" src="./MQTT_runtime/mqttws31.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/crypto-js.js"></script>
+
+    <script src="./js/mobile_robot3.js" type="text/javascript"></script>
+
+    <title>Remote Switch Robot UI - 会津大学</title>
+    <style>
+      header {
+        display: flex;
+        width: 100%;
+        height: 100px;
+        color: #FFF;
+        background-color: #668ad8;
+        align-items: center;
+      }
+
+      .title {
+        margin-right: auto;
+      }
+
+      .btn-stitch {
+        display: inline-block;
+        padding: 0.5em 1em;
+        text-decoration: none;
+        background: #668ad8;
+        color: #FFF;
+        border-radius: 4px;
+        box-shadow: 0 0 0 5px #668ad8;
+        border: dashed 1px #FFF;
+      }
+
+      .btn-stitch:hover {
+        border: dotted 1px #FFF;
+      }
+      .menu-item {
+        list-style: none;
+        display: inline-block;
+        padding: 10px;
+      }
+
+      #noUiSlider {
+        width: 90%;
+        margin: 0 auto;
+      }
+      #range {
+        margin-top: 1em;
+      }
+
+      #rico {
+        position: absolute;
+        top: 470px;
+        left: 40px;
+      }
+
+      #fig2 {
+        position: relative;
+      }
+
+      #lamp1 {
+        position: absolute;
+        top: 258px;
+        left: 190px;
+      }
+
+      #lamp2 {
+        position: absolute;
+        top: 258px;
+        left: 442px;
+      }
+
+      #lamp3 {
+        position: absolute;
+        top: 258px;
+        left: 694px;
+      }
+
+      #img1 {
+        position: absolute;
+        top: 418px;
+        left: 226px;
+      }
+      #img2 {
+        position: absolute;
+        top: 420px;
+        left: 477px;
+      }
+      #img3 {
+        position: absolute;
+        top: 418px;
+        left: 730px;
+      }
+      #img4 {
+        position: absolute;
+        top:450px;
+        left:25px;
+      }
+      #img5 {
+        position: absolute;
+        top:460px;
+        left:65px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <nav class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container-fluid">
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">Aqua Crew</a>
+          </div>
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav navbar-right">
+              <li class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                  {{ selectedLocation || '会津大学' }} <b class="caret"></b> <!-- 選択された場所を表示 -->
+                </a>
+                <ul class="dropdown-menu">
+                  <li><a href="#" @click="setLocation('会津大学', './seigyobann_aizu.html')">会津大学</a></li>
+                  <li><a href="#" @click="setLocation('北塩原村', './seigyobann_kitashiobara.html')">北塩原村</a></li>
+                  <li><a href="#" @click="setLocation('仮想空間', './seigyobann_virtual.html')">仮想空間</a></li>
+                </ul>
+              </li>
+              <li>
+                <a href="#" class="btn btn-primary" id="viewBtn">View</a>
+              </li>
+              <li>
+                <a href="#" class="btn btn-warning" id="operationBtn">Operation</a>
+              </li>
+            </ul>
+            <form class="navbar-form navbar-right">
+              <div class="col-lg-6">
+                <div class="input-group">
+                  <input v-model="date" type="date" id="datepicker" class="form-control" placeholder="yy-mm-dd"/>
+                  <span class="input-group-btn">
+                    <button class="btn btn-default" type="button" v-on:click="submit">Go</button>
+                  </span>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </nav>
+
+      <div>
+        <img id="fig2" src="./fig2.png" alt=""/>
+        <img id="lamp1" src="0.png" width="80" height="80" border="0">
+        <img id="lamp2" src="0.png" width="80" height="80" border="0">
+        <img id="lamp3" src="0.png" width="80" height="80" border="0">
+        <img id="img1" src="parpende.png"/>
+        <img id="img2" src="parpende.png"/>
+        <img id="img3" src="parpende.png"/>
+        <img id="img4" src="robot1.png" class="s1"/><br>
+        <div id="frame1">
+          <img id="img5" src="robot2.png" class="s2"/><br>    
+        </div>
+      </div>
+
+      <br><br>
+
+      <div id="noUiSlider">
+        <div id="slider-huge"></div>
+        <br><br>
+        <div id="huge-value"></div>
+        <br>
+        <p class="meter">
+          <span id="skip-value-nav-lower"></span>
+        </p>
+      </div>
+
+      <span id="view_time"></span>
+      <br>
+      <div id="shopinfo">
+
+        <br><br>
+        <button onclick="OnButtonClick1()">画像移動1を実行</button><br>
+        <button onclick="OnButtonClick2()">画像移動2を実行</button>
+        <button onclick="OnButtonClick3()">画像移動3を実行</button>
+
+        <script>
+          var app = new Vue({
+            el: '#app',
+            data: {
+              selectedLocation: '会津大学', // 初期選択を会津大学に設定
+              date: ''
+            },
+            methods: {
+              // 選択した場所をlocalStorageに保存し、指定したページへ遷移
+              setLocation: function(location, url) {
+                localStorage.setItem('selectedLocation', location);
+                this.selectedLocation = location;
+                window.location.href = url; // ページ遷移
+              }
+            },
+            mounted() {
+              // ページロード時にローカルストレージから選択した場所を取得
+              const storedLocation = localStorage.getItem('selectedLocation');
+              if (storedLocation) {
+                this.selectedLocation = storedLocation;
+              } else {
+                this.selectedLocation = '会津大学'; // デフォルト値を設定
+              }
+              document.title = this.selectedLocation;
+            }
+          });
+
+          document.getElementById('viewBtn').addEventListener('click', function(event) {
+            event.preventDefault();
+            window.location.href = "./view.html";
+          });
+
+          document.getElementById('operationBtn').addEventListener('click', function(event) {
+            event.preventDefault();
+            window.location.href = "./mqtt_op.html";
+          });
+        </script>
+      </div>
+    </div>
+  </body>
+</html>
+

@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="jp">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>会津大学</title>
+    <link rel="stylesheet" type="text/css" href="css/style.css"/>
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.9.2/themes/base/jquery-ui.css" />
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"/>
+    <link rel="stylesheet" title="text/css" href="css/bootstrap.min.css.map"/>
+    <link rel="stylesheet" title="text/css" href="css/bootstrap-theme.min.css"/>
+    <link rel="stylesheet" title="text/css" href="css/bootstrap-theme.min.css.map"/>
+    <link rel="stylesheet" title="text/css" href="css/dashboard.css"/>
+    <link rel="stylesheet" href="css/main.css">
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <script src="./lib/moment-with-locales.min.js"></script>
+    <script src="./lib/moment-timezone-with-data-2010-2020.min.js"></script>
+    <script type="text/javascript" src="./lib/jquery-1.11.3.min.js"></script>
+    <script src="http://code.jquery.com/ui/1.9.2/jquery-ui.js"></script>
+    <script type="text/javascript" src="./lib/vue.min.js"></script>
+    <script type="text/javascript" src="js/datepicker.js"> </script>
+    <script type="text/javascript" src="lib/bootstrap.min.js"></script>
+    <script src="./loader.js"></script>
+
+
+	<!-- スクリプト部分 -->
+<script src="js/maketime.js" type="text/javascript"></script>
+<script type="text/javascript">
+
+// date sid
+function loadJson(date,sid){
+    console.log("call json",date);
+    $.ajax({
+            type:'get',
+            //url:"http://153.142.125.8/RDRAQ/search2nddb",
+            url:"http://ellighttracker2.appspot.com/ellighttracker2?mode=j&date="+date+"&sid="+sid,
+            //url:"rdr.json",
+            //data: {camera_id: "Lab1", date: "2021-01-19"},
+            dataType: "json",
+            contentType: "application/json",
+            crossDomain:true,
+             timeout:1000,
+             error:function () {
+                 alert("error:");
+             },
+            success:parse_json
+    });
+}
+
+
+function parse_json(json,status) {
+	var redCountArray = new Array(45);
+	for(var i=0;i<json.data_lists.length;i++){
+		drawLine(json.data_lists[i]);
+	        console.log(json.data_lists[i]);
+
+
+	}
+}
+// parse json2
+//function parse_json2(json,status) {
+///	var redCountArray = new Array(45);
+//	for(var i=0;i<json.data_lists.length;i++){
+//		drawLine2(json.data_lists[i]);
+//
+//	}
+//}
+
+//window.onload = function() {
+//    // htmlファイルのロードが完了してから実行
+//    v_draw();
+//}
+
+window.onload = function() {
+    // htmlファイルのロードが完了してから実行
+    drawchar();
+}
+
+// 5ピクセル
+cnt=0　// 45個　描画するためのカウンタ―
+function drawLine(data_list,count=false){
+//function drawLine(data_list){
+	var red_count=0;
+
+	var canvas = document.getElementById('can');
+	//画面リサイズ
+	var ctx = canvas.getContext('2d');
+	// ここに 文字を置くと、45回呼び出される。
+    
+     console.log(data_list.length);
+	for(var i=0;i<data_list.length;i++){
+		if(data_list[i].color==0) ctx.fillStyle = "gray";
+		if(data_list[i].color==1) ctx.fillStyle = "lightgreen";
+		if(data_list[i].color==2) ctx.fillStyle = "red";
+		if(data_list[i].color==3) ctx.fillStyle = "yellow";
+		ctx.fillRect(200+i,cnt*20,1,10); //5ピクセル
+                console.log(data_list[i])
+　　　　　　　　　console.log(data_list[data_list.length])
+                console.log(data_list.length)
+	}
+	cnt++; //カメラのid の数
+	if(count===true){
+
+		return red_count;
+	}
+}
+
+//function drawLine2(data_list,count=false){
+//function drawLine(data_list){
+//	var red_count=0;
+
+//	var canvas = document.getElementById('can2');
+	//画面リサイズ
+//	var ctx = canvas.getContext('2d');
+	// ここに 文字を置くと、45回呼び出される。
+
+//	for(var i=0;i<data_list.length;i++){
+//		if(data_list[i].data==0) ctx.fillStyle = "gray";
+//		if(data_list[i].data==1) ctx.fillStyle = "lightgreen";
+//		if(data_list[i].data==2) ctx.fillStyle = "red";
+//		if(data_list[i].data==3) ctx.fillStyle = "yellow";
+//		ctx.fillRect(200+i,cnt*20,1,10); //5ピクセル
+//	}
+//	cnt++; //カメラのid の数
+//	if(count===true){
+
+//		return red_count;
+//	}
+//}
+
+function drawchar(data_list){
+	var canvas = document.getElementById('can');
+	//画面リサイズ
+	var ctx = canvas.getContext('2d');
+
+	ctx.font ='13px normal';
+	ctx.textAlign ='left';
+	ctx.fillStyle = "black";
+	ctx.fillText('左側ランプ',10,10);
+
+	ctx.font ='13px normal';
+	ctx.textAlign ='left';
+	ctx.fillStyle = "black";
+	ctx.fillText('中央ランプ',10,30);
+
+	ctx.font ='13px normal';
+	ctx.textAlign ='left';
+	ctx.fillStyle = "black";
+	ctx.fillText('右側ランプ',10,50);
+
+	//ctx.font ='13px normal';
+	//ctx.textAlign ='left';
+	//ctx.fillStyle = "black";
+	//ctx.fillText('No1 曝気ブロワ',10,70);
+
+      //  ctx.font ='13px normal';
+	//ctx.textAlign ='left';
+	//ctx.fillStyle = "black";
+	//ctx.fillText('No2 曝気ブロワ',10,90);
+
+
+}
+
+
+
+//getCSV();
+//loadJson("2021-01-03","shoro1");
+//loadJson("2021-01-03","shiro2");
+loadJson("2021-01-15","Lab1");
+//loadJson("2020-12-01","SW1");
+//loadJson2("2021-01-19","shiobara4");
+
+//loadJson("date","aizu2");
+//getSelectedCsvData();
+
+/*
+$(function() {
+    $('#Demo').perfectScrollbar();
+});
+*/
+</script>
+
+    <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
+    <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+  <div id="app">
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">Aqua Crew</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav navbar-right">
+          <li><a class="dropdown-toggle" data-toggle="dropdown" href="#">
+					会津大学<b class="caret"></b></a>
+					<ul class="dropdown-menu">
+					<li><a href="#">北塩原村</a></li>
+					<li><a href="#">会津若松市</a></li>
+					<li><a href="#">猪苗代町</a></li>
+					<li><a href="#">市営住宅_小田垣団地</a></li>
+					</ul>
+					</li>
+          </ul>
+          <form class="navbar-form navbar-right">
+          	<div class="col-lg-6">
+          		<div class="input-group">
+					<input v-model="message" type="date" id="datepicker" class="form-control" placeholder="yy-mm-dd"/>
+					<span class ="input-group-btn">
+						<button class ="btn btn-default" type="button" v-on:click="submit">Go</button>
+					</span>
+
+          		</div>
+          	</div>
+            <!-- <input type="text" class="form-control" placeholder="Search..."> -->
+          </form>
+        </div>
+      </div>
+    </nav>
+
+     					<!-- col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main -->
+         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+            <h1 class="page-header">会津大学内 <br> 研究室内制御盤 <br> 2021-01-19</h1>
+
+             <!-- ここの文字とid が同じものであれば　chart.jsは　# で示されている。 -->
+
+                         <svg id="svg"></svg>
+                         <script src="js/maketime.js" type="text/javascript"></script>
+             　　　　　　　　　　　　<canvas id="can" width="900" height="300"></canvas>
+
+          <h2 class="sub-header">稼働情報</h2>
+          <h4 class="sub-header">色情報について:赤色->稼働　緑色->停止　灰色->未使用</h2>
+          <div class="table-responsive">
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>種別</th>
+                  <th>日(回数)</th>
+          <!--         <th>月(回数)</th> -->
+                  <th>稼働時間(m)</th>
+          <!--        <th>電流値(A)[基準値 7.5A</th> -->
+                </tr>
+                </thead>
+              <tbody>
+                <tr>
+                  <td>左側ランプ</td>
+                  <td>0</td>
+             <!--       <td>{{ countCycle }}</td>  -->
+                  <td>0</td>
+             <!--       <td>{{ elec1 }}<td>	 -->
+                </tr>
+                <tr>
+                  <td>中央ランプ</td>
+                  <td>0</td>
+                <!--    <td>{{ countCycle2 }}</td>	-->
+                  <td>0</td>
+       <!--            <td>{{ elec2 }}</td> -->
+                </tr>
+                <tr>
+                  <td>右側ランプ</td>
+                  <td>0</td>
+            <!--       <td>0</td>	-->
+                  <td>1440</td>
+             <!--      <td>0</td>	-->
+                </tr>
+             
+
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+</div>
+<script src="js/mainVue.js"></script>

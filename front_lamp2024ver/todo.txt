@@ -1,0 +1,2 @@
+seigyobann.htmlをview.htmlのテンプレートに表示を合わせる
+

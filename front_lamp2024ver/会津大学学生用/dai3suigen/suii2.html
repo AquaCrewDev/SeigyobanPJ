@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>運転履歴データベース</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script>
+$( function() {
+
+$('#btn1').click(
+function(){
+$("#out6").html("データ取得中です");
+
+sid = document.getElementById("sid");
+sid.innerText = document.forms.form1.sid.value;
+
+date = document.getElementById("date");
+date.innerText = document.forms.form1.date.value;
+
+let sui = '水位';
+let time = '時間';
+
+
+// author aquacrew_akira sato
+// 1.$.ajaxメソッドで通信を行います。
+//  dataでは、フォームの内容をserialize()している
+//  →serialize()の内容は、cs1=custom1&cs2=custom2
+$.ajax({
+url:'http://ellighttracker2.appspot.com/ellighttracker2?mode=j', // 通信先のURL
+     crossDomain:true,
+type:'GET', // 使用するHTTPメソッド (GET/ POST)
+data:$("#form1").serialize(), // 送信するデータ
+dataType:'json', // 応答のデータの種類
+// (xml/html/script/json/jsonp/text)
+timeout:10000, // 通信のタイムアウトの設定(ミリ秒)
+
+// 2. doneは、通信に成功した時に実行される
+//  引数のdata1は、通信で取得したデータ
+//  引数のtextStatusは、通信結果のステータス
+//  引数のjqXHRは、XMLHttpRequestオブジェクト
+}).done(function(data1,textStatus,jqXHR) {
+$("#out1").html(jqXHR.status); //jqXHR.statusを表示
+$("#out2").html(textStatus); //textStatusを表示
+
+// 3. キーを指定して値を表示
+$("#out4").html(data1);
+console.log("test");
+console.log(data1);
+                         console.log(data1.Date.length)
+                                // 32ch
+                         console.log(data1.data_lists[0].length)
+
+                               
+
+//HTMLを初期化
+$("table.tbl tbody").html("");
+console.log("test2");
+//HTMLを生成
+                                //３２はｃｈの事を意味している
+                                //０はチャンネル番号の事だから３２個ある
+　　　　　　　　　　　　　　　　　$('<tr><th>'+sui+'</th><th>'+time+'</th></tr>').appendTo('table.tbl tbody');
+
+for(var index in data1.data_lists[6]){
+$('<tr>'+
+'<td align="center"　width="120%">'+data1.data_lists[6][index].data+'</td>'+
+'<td align="center" width="100%">' +data1.data_lists[6][index].Time + '</td>' +
+'</tr>').appendTo('table.tbl tbody');
+}
+
+
+// 4. オブジェクトをJSON形式の文字列に変換
+var data2 = JSON.stringify(data1);
+// 5.JSON形式の文字列をオブジェクトにし、
+// キーを指定して値(httpbin.org)を表示
+var data3 = JSON.parse(data2);
+                         console.log("test3");
+                         console.log(data3.data_lists.length)
+
+
+                     
+$("#out5").html(data3.data_lists);
+
+// 6. failは、通信に失敗した時に実行される 090 4880 4370
+}).fail(function(jqXHR, textStatus, errorThrown ) {
+$("#out1").html(jqXHR.status); //jqXHR.statusを表示
+$("#out2").html(textStatus); //textStatusを表示
+$("#out3").html(errorThrown); //errorThrownを表示
+
+// 7. alwaysは、成功/失敗に関わらず実行される
+}).always(function(){
+$("#out6").html("complete"); //表示3
+
+});
+});
+});
+
+
+</script>
+</head>
+<body >
+<h1></h1>
+<p>response:200であれば成功：<span id="out1"></span></p>
+<p>地域名：第三水源井戸ポンプ場:<span id="sid"></span></p>
+<p>年月：<span id="date"></span></p>
+<a href="top.html">トップ画面へ</a><br><br>
+<TABLE aligin="center" cellpadding="10" cellspacing="0" border="1">
+<TR>
+<!-- <td align="center" width="300">水位</td> -->
+<!-- <td align="center" width="300">時間</td> -->
+
+</TR>
+<TR>
+</TABLE>
+<table aligin="center" cellpadding="10" cellspacing="0" border="1" class="tbl">
+<col width="15%" />
+<col width="15%" />
+<col width="15%" />
+
+<tbody>
+</tr>
+</tbody>
+</table>
+<br>
+<br>
+<form id="form1">
+<input type="button" id="btn1" value="submit"><br/>
+西暦　年を入力してください！ (例)2018<br/>
+<input type="date" name="date"><br>
+
+地域ＩＤを入力してください！ (例)DAQA005:第３水源<br/>
+<input type="text" name="sid" value="" maxlength="10"><br/>
+</form>
+
+
+</body>
+</html>
+

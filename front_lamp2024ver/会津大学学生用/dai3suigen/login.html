@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="jp">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <!-- <link rel="icon" href="../../favicon.ico"> -->
+   <!--   <title>会津若松市</title> -->
+   <title>アクアクルー株式会社</title>
+    <link rel="stylesheet" type="text/css" href="css/style.css"/>
+    <link rel="stylesheet" type="text/css" href="css/chartStyle.css"/>
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.9.2/themes/base/jquery-ui.css" />
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"/>
+    <link rel="stylesheet" title="text/css" href="css/bootstrap.min.css.map"/>
+    <link rel="stylesheet" title="text/css" href="css/bootstrap-theme.min.css"/>
+    <link rel="stylesheet" title="text/css" href="css/bootstrap-theme.min.css.map"/>
+    <link rel="stylesheet" title="text/css" href="css/dashboard.css"/>
+	<link rel="stylesheet" href="css/main.css">
+
+    <script src="./lib/moment-with-locales.min.js"></script>
+    <script src="./lib/moment-timezone-with-data-2010-2020.min.js"></script>
+    <script type="text/javascript" src="./lib/jquery-1.11.3.min.js"></script>
+    <script src="http://code.jquery.com/ui/1.9.2/jquery-ui.js"></script>
+    <script type="text/javascript" src="./lib/vue.min.js"></script>
+    <script type="text/javascript" src="./lib/d3.min.js"></script>
+    <script type="text/javascript" src="js/datepicker.js"> </script>
+    <script type="text/javascript" src="lib/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/bootstrap.js"> </script>
+    <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+    <script src="jquery.clock.js"></script>
+
+    <!-- <script type="text/javascript" src="lib/d3-legend.min.js"> </script> -->
+    <!-- <script type="text/javascript" src="js/d3_legend.js></script>        -->
+
+	<!-- スクリプト部分 -->
+<script type="text/javascript">
+
+function clock() {
+var myDay = new Array("日","月","火","水","木","金","土");
+var now  = new Date();
+var year = now.getFullYear(); // 年
+var month = now.getMonth()+1; // 月
+var date = now.getDate(); // 日
+var day = now.getDay();
+var hour = now.getHours(); // 時
+var min  = now.getMinutes(); // 分
+var sec  = now.getSeconds(); // 秒
+
+// 数値が1桁の場合、頭に0を付けて2桁で表示する指定
+if(hour < 10) { hour = "0" + hour; }
+if(min < 10) { min = "0" + min; }
+if(sec < 10) { sec = "0" + sec; }
+
+
+// フォーマット②
+var clock2 = year + '年' + month + '月' + date + '日' + '（' + myDay[day] + '曜日）'  + hour + '時' + min + '分' + sec + '秒';
+
+document . getElementById( 'clock-02' ) . innerHTML= clock2 . toLocaleString(); // div id="clock-02"
+
+// 1000ミリ秒ごとに処理を実効
+window . setTimeout( "clock()", 1000);
+}
+window . onload = clock;
+
+function gate(){
+	// ユーザの入力を求める
+    var UserInput = prompt("パスワードを入力して下さい:","");
+    // 入力内容をチェック
+    if( /\W+/g.test(UserInput) ) {
+    	// 半角英数字以外の文字が存在したらエラー
+    	alert("半角英数字のみを入力して下さい。");
+    }
+    else if( UserInput != null ) {
+	    // 入力内容からファイル名を生成して移動
+		location.href = UserInput + ".html";
+	}
+}
+
+</script>
+
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+
+    <!-- Custom styles for this template -->
+    <link href="dashboard.css" rel="stylesheet">
+
+    <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
+    <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+    <script src="../../assets/js/ie-emulation-modes-warning.js"></script>
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+  <div id="app">
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">Aqua Crew</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav navbar-right">
+          <li><a class="dropdown-toggle" data-toggle="dropdown" href="#">
+					<!--  会津若松市<b class="caret"></b></a> -->
+					 <b class="caret"></b></a>
+					<ul class="dropdown-menu">
+					<li><a href="#"></a></li>
+					<li><a href="#"></a></li>
+					<li><a href="#"></a></li>
+					<li><a href="#"></a></li>
+					</ul>
+					</li>
+          </ul>
+          <form class="navbar-form navbar-right">
+          	<div class="col-lg-6">
+          		<!--   <div class="input-group">
+					<input v-model="message" type="date" id="datepicker" class="form-control" placeholder="yy-mm-dd"/>
+					<span class ="input-group-btn">
+						<button class ="btn btn-default" type="button" v-on:click="submit">Go</button>
+					</span>
+
+          		</div> -->
+
+          	</div>
+            <!-- <input type="text" class="form-control" placeholder="Search..."> -->
+          </form>
+        </div>
+      </div>
+
+    </nav>
+
+
+     					<!-- col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main -->
+         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+           <!--   <h1 class="page-header">会津若松市 <br> 下荒井農業集落施設 <br> {{ message }}</h1> -->
+           <h1 class="page-header">アクアクルー株式会社 <br> ログイン認証画面 <br><br><div id="clock-02"></div> </h1>
+	<script src="js/View.js"></script>
+             <!-- ここの文字とid が同じものであれば　chart.jsは　# で示されている。 -->
+
+                <div class="row">
+       <div class="col-md-6 col-md-offset-3">
+          <h1> </h1>
+          <form action="" method="post" class="form-horizontal">
+ <!--
+            <div class="form-group">
+              <div class="col-md-10">
+                <input type="text"　name="url" class="form-control" id="gmail" placeholder="Name" /><br />
+              </div>
+            </div>
+-->
+            <div class="form-group">
+              <div class="col-md-offset-2 col-md-10">
+                <button onclick ="gate()" class="btn btn-primary btn-block"  type="submit"><a href="kitashiobara.html">認証</a></button>
+              </div>
+            </div>
+        　</form>
+    　 </div>
+    </div>
+</div>
+</div>

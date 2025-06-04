@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>運転履歴データベース</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script>
+$( function() {
+
+$('#btn1').click(
+function(){
+	$("#out6").html("データ取得中です");
+
+	place = document.getElementById("place");
+	place.innerText = document.forms.form1.rid.value;
+	
+	year = document.getElementById("year");
+	year.innerText = document.forms.form1.year.value;	
+	
+	month = document.getElementById("month");
+	month.innerText = document.forms.form1.month.value;
+	if(place.innerText == 6){
+		      $("#place").html("第３水源ポンプ場");
+	}else{
+		      alert('テスト中です');
+	}
+
+	// author aquacrew_akira sato
+	// 1.$.ajaxメソッドで通信を行います。
+	//  dataでは、フォームの内容をserialize()している
+	//  →serialize()の内容は、cs1=custom1&cs2=custom2
+	$.ajax({	
+		url:'http://ellighttracker2.appspot.com/month?mode=e', // 通信先のURL
+	        crossDomain:true,
+		type:'POST',		// 使用するHTTPメソッド (GET/ POST)
+		data:$("#form1").serialize(), // 送信するデータ
+		dataType:'json', // 応答のデータの種類 
+						// (xml/html/script/json/jsonp/text)
+		timeout:10000, 		// 通信のタイムアウトの設定(ミリ秒)
+
+		// 2. doneは、通信に成功した時に実行される
+		//  引数のdata1は、通信で取得したデータ
+		//  引数のtextStatusは、通信結果のステータス
+		//  引数のjqXHRは、XMLHttpRequestオブジェクト
+		}).done(function(data1,textStatus,jqXHR) {
+				$("#out1").html(jqXHR.status); //jqXHR.statusを表示
+				$("#out2").html(textStatus); //textStatusを表示
+
+				// 3. キーを指定して値を表示 
+				$("#out4").html(data1);
+				console.log(data1);
+
+				//HTMLを初期化
+				$("table.tbl tbody").html("");
+
+				//HTMLを生成
+				for(var index in data1.datalist){
+				$('<tr>'+
+				'<td align="center"　width="149">'+data1.datalist[index].date+'</td>'+
+				'<td align="center" width="149">' +data1.datalist[index].targetName + '</td>' +
+				'<td align="center" width="149">'+data1.datalist[index].startTime +'</td>'+
+				'<td align="center" width="149">' + data1.datalist[index].endTime +'</td>'+
+				'<td align="center" width="149">' + data1.datalist[index].upTime + '</td>'+
+				'<td align="center" width="149">' + data1.datalist[index].MaxData + '</td>'+
+				'</tr>').appendTo('table.tbl tbody');
+				}	
+
+
+				// 4. オブジェクトをJSON形式の文字列に変換
+				var data2 = JSON.stringify(data1);
+				// 5.JSON形式の文字列をオブジェクトにし、
+				// キーを指定して値(httpbin.org)を表示
+				var data3 = JSON.parse(data2);
+				console.log(data3)
+				$("#out5").html(data3["datalist"]["targetName"]);
+
+		// 6. failは、通信に失敗した時に実行される 
+		}).fail(function(jqXHR, textStatus, errorThrown ) {
+				$("#out1").html(jqXHR.status); //jqXHR.statusを表示
+				$("#out2").html(textStatus); //textStatusを表示
+				$("#out3").html(errorThrown); //errorThrownを表示
+
+		// 7. alwaysは、成功/失敗に関わらず実行される
+		}).always(function(){
+				$("#out6").html("complete"); //表示3
+				
+});
+});
+});
+
+	
+</script>
+</head>
+<body >
+<p>response:200であれば成功：<span id="out1"></span></p>
+<p>地域名：<span id="place"></span></p>
+<p>年：<span id="year"></span>年</p>
+<p>月：<span id="month"></span>月</p><br>
+<a href="top.html">トップ画面へ</a><br><br>
+<TABLE aligin="center" cellpadding="10" cellspacing="0" border="1">
+<TR>
+<TD align="center" width="149">日付</TD>
+<TD align="center" width="149">機器名称</TD>
+<TD align="center" width="149">運転開始(on)</TD>
+<TD align="center" width="187">運転終了(off)</TD>
+<TD align="center" width="187">運転時間</TD>
+<TD align="center" width="187">センサー値</TD>
+</TR>
+<TR>
+</TABLE>
+<table aligin="center" cellpadding="10" cellspacing="0" border="1" class="tbl">
+<col width="15%" />
+<col width="15%" />
+<col width="15%" />
+
+<tbody>
+</tr>
+</tbody>
+</table>
+<br>
+<br>
+<form id="form1">
+<input type="button" id="btn1" value="submit"><br/>
+西暦　年を入力してください！ (例)2018<br/>
+<input type="text" name="year" value="" maxlength="10"><br/>
+月を入力してください！ (例)01,02,03...12月<br/>
+<input type="text" name="month" value="" maxlength="10"><br/>
+地域ＩＤを入力してください！（例）6:第３水源ポンプ場<br/>
+
+<input type="text" name="rid" value="" maxlength="10"><br/>
+</form>
+
+
+</body>
+</html>

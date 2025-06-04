@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>remote Switch robot</title>
+	<style>
+<!--
+		#rico {
+			position: absolute;
+			top:470px;
+			left:40px;
+		}
+		-->
+		
+              #lamp1 {
+			position: absolute;
+			top:290px;
+			left:196px;
+		}
+
+              #lamp2 {
+			position: absolute;
+			top:293px;
+			left:450px;
+		}
+      
+              #lamp3 {
+			position: absolute;
+			top:293px;
+			left:700px;
+		}
+         #img1 {
+			position: absolute;
+			top:447px;
+			left:235px;
+		}#img2 {
+			position: absolute;
+			top:450px;
+			left:485px;
+		}#img3 {
+			position: absolute;
+			top:450px;
+			left:740px;
+		}
+	</style>
+</head>
+
+<body>
+<img id="lamp1" src="0.png" width="80" height="80" border="0">
+<img id="lamp2" src="0.png">
+<img id="lamp3" src="0.png"> 
+
+<!--switch bou-->
+ <img id="img1" src="parpende.png" /><br>
+ <img id="img2" src="parpende.png" /><br>
+ <img id="img3" src="parpende.png" /><br>
+
+
+  <img src="./fig2.png" alt="" /><br><!--制御盤全体-->
+ <!--
+  <input type="submit" id="button" value ="Left on" onclick="buttonClick();" />
+  <input type="submit" id="button2" value ="Center on" onclick="buttonClick2();" />
+  <input type="submit" id="button3" value ="Right on" onclick="buttonClick3();" />
+  <input type="submit" id="button4" value ="Reset" onclick="buttonClick4();" /><br>
+-->
+<!-- スイッチを60度回転させる-->
+<input type="button" value="右へ90度回転" onclick="kaiten(60);">
+<input type="button" value="右へ90度回転" onclick="kaiten(-60);"><br>
+
+<input type="button" value="右へ90度回転" onclick="kaiten2(60);">
+<input type="button" value="右へ90度回転" onclick="kaiten2(-60);"><br>
+
+<input type="button" value="右へ90度回転" onclick="kaiten3(45);">
+<input type="button" value="右へ90度回転" onclick="kaiten3(-45);"><br>
+
+<!--
+  <input type="submit" id="switch" value ="switch2" onclick="changeIMG5();" />
+  <input type="submit" id="switch3" value ="switch3" onclick="changeIMG6();" />
+-->
+
+<script>
+              //画像を配列に格納する
+var img = new Array();
+var img_bou = new Array();
+
+//ランプ画像読み込み
+img[0] = new Image();
+img[0].src = "./0.png"; //白
+img[1] = new Image();
+img[1].src = "./1.png"; //赤
+img[2] = new Image();
+img[2].src=  "./2.png"; //緑
+
+//画像番号用のグローバル変数
+var cnt=0;
+
+
+//画像切り替え関数 button
+function changeIMG(){
+  
+  //画像番号を進める
+  if (cnt == 2){ 
+    cnt=0;
+    }
+  else{ 
+    cnt++; 
+    }
+  
+  //画像を切り替える
+ if (cnt == 2){ 
+  document.getElementById("lamp1").src=img[2].src;
+}
+if (cnt == 1){ 
+  document.getElementById("lamp1").src=img[1].src;
+}
+if (cnt == 0){ 
+  document.getElementById("lamp1").src=img[0].src;
+}
+} 
+//画像切り替え関数
+function changeIMG2(){
+  
+  //画像番号を進める
+  if (cnt == 2)
+  { cnt=0; }
+  else
+  { cnt++; }
+  
+  //画像を切り替える
+  document.getElementById("lamp2").src=img[cnt].src;
+}                
+
+//画像切り替え関数
+function changeIMG3(){
+  
+  //画像番号を進める
+  if (cnt == 2)
+  { cnt=0; }
+  else
+  { cnt++; }
+  
+  //画像を切り替える
+  document.getElementById("lamp3").src=img[cnt].src;
+}
+
+var d = 0;
+function kaiten(x){
+  var e = document.getElementById("img1");
+  d = d + x;
+  e.style.transform = "rotate(" + d + "deg)";
+
+ if (cnt == 2)
+  { cnt=0; }
+  else
+  { cnt++; }
+  
+  //画像を切り替える
+  document.getElementById("lamp1").src=img[cnt].src;
+}
+ 
+var v = 0;
+function kaiten2(x){
+  var e = document.getElementById("img2");
+
+ if (cnt == 2)
+  { cnt=0; }
+  else
+  { cnt++; }
+  
+  v = v + x;
+  e.style.transform = "rotate(" + v + "deg)";
+
+  //画像を切り替える
+  document.getElementById("lamp2").src=img[cnt].src;
+}              
+
+var r = 0;
+function kaiten3(x){
+  var e = document.getElementById("img3");
+  r = r + x;
+  e.style.transform = "rotate(" + r + "deg)";
+
+ if (cnt == 2)
+  { cnt=0; }
+  else
+  { cnt++; }
+  
+  //画像を切り替える
+  document.getElementById("lamp3").src=img[cnt].src;
+
+} 
+
+</script>
+</body>
+</html>

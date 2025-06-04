@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>animation</title>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+
+
+<style>
+
+.bgBox{
+  background-color:skyblue;
+  padding : 20px;
+}
+.bgPink{
+  background-color:pink;
+}
+#box3{height:30px;width:30px;border:1px solid #000;background-color:yellow;}
+
+</style>
+</head>
+
+<body>
+
+
+<input type="button" id="button5" value="ボタン5" />
+<input type="button" id="button6" value="ボタン6" />
+<div id="box3"></div>
+
+
+<script>
+
+$("#button5").click(function() {
+		$("#box3")
+			.animate({marginLeft:'1000px'},1500) //margin-topをキャメルケースで書く
+			.animate({marginLeft:'50px'}) //margin-leftをキャメルケースで書く
+			.animate({marginLeft:'100px'}) //margin-leftをキャメルケースで書く
+                  .animate({marginLeft:'50px'}) //margin-leftをキャメルケースで書く
+			.animate({marginLeft:'0px'}) //margin-leftをキャメルケースで書く
+			.animate({marginTop:'0px'}) //margin-topをキャメルケースで書く
+	});
+
+	$("#button6").click(function() {
+		$("#box3")
+			.animate({marginLeft:'50px'}) //margin-leftをキャメルケースで書く
+			.animate({marginLeft:'0px'}) //margin-leftをキャメルケースで書く
+			.animate({marginTop:'0px'}) //margin-topをキャメルケースで書く
+	});
+
+
+</script>
+
+
+</body>
+</html>
+

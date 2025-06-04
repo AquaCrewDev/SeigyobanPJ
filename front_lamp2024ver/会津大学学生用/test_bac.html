@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>remote Switch robot</title>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+	<style>
+
+		#fig2 {
+			position: relative;
+			top:0px;
+			left:0px;
+			width:10px;
+			height:50px;
+		}
+
+   #lamp1 {
+			position: absolute;
+			top:520px;
+			left:196px;
+		}
+
+    #lamp2 {
+			position: absolute;
+			top:520px;
+			left:450px;
+		}
+
+    #lamp3 {
+			position: absolute;
+			top:520px;
+			left:700px;
+		}
+    #img1 {
+			position: absolute;
+			top:640px;
+			left:235px;
+		}#img2 {
+			position: absolute;
+			top:643px;
+			left:485px;
+		}#img3 {
+			position: absolute;
+			top:643px;
+			left:740px;
+		}
+		#img4 {
+			position: relative;
+			top:570px;
+			left:25px;
+		}
+		#img5 {
+			position: absolute;
+			top:660px;
+			left:25px;
+		}
+
+	</style>
+</head>
+
+<body>
+<img id="lamp1" src="0.png" width="80" height="80" border="0">
+<img id="lamp2" src="0.png">
+<img id="lamp3" src="0.png">
+
+<!--switch bou-->
+ <img id="img1" src="parpende.png" /><br>
+ <img id="img2" src="parpende.png" /><br>
+ <img id="img3" src="parpende.png" /><br>
+ <img id="img4" src="robot1.png"　class ="s1" /><br>
+ <img id="img5" src="robot2.png" class="s2"/><br>
+
+
+  <img src="./fig2.png" alt="" /><br><!--制御盤全体-->
+
+<input type="button" value="左側60度回転" onclick="kaitenAll(1,60);"><br>
+<input type="button" value="真ん中60度回転" onclick="kaitenAll(2,60);"><br>
+<input type="button" value="右側60度回転" onclick="kaitenAll(3,60);"><br>
+
+<!--
+  <input type="submit" id="switch" value ="switch2" onclick="changeIMG5();" />
+  <input type="submit" id="switch3" value ="switch3" onclick="changeIMG6();" />
+-->
+
+<script>
+//画像を配列に格納する
+var img = new Array();
+var img_bou = new Array();
+
+//ランプ画像読み込み
+img[0] = new Image();
+img[0].src = "./0.png"; //白
+img[1] = new Image();
+img[1].src = "./1.png"; //赤
+img[2] = new Image();
+img[2].src　= "./2.png"; //緑
+
+//画像番号用のグローバル変数
+var cnt=0;
+
+
+//画像切り替え関数 button
+function changeIMG(){
+
+  //画像番号を進める
+  if (cnt == 2){
+    cnt=0;
+  }
+  else{
+    cnt++;
+  }
+
+  //画像を切り替える
+ 	if (cnt == 2){
+  	document.getElementById("lamp1").src=img[2].src;
+	}
+	if (cnt == 1){
+  	document.getElementById("lamp1").src=img[1].src;
+	}
+	if (cnt == 0){
+  	document.getElementById("lamp1").src=img[0].src;
+	}
+}
+//画像切り替え関数
+function changeIMG2(){
+
+  //画像番号を進める
+  if (cnt == 2){
+		cnt=0;
+	}else{
+		cnt++;
+	}
+
+  //画像を切り替える
+  document.getElementById("lamp2").src=img[cnt].src;
+}
+
+//画像切り替え関数
+function changeIMG3(){
+  //画像を切り替える
+  document.getElementById("lamp3").src=img[cnt].src;
+}
+
+y=0;
+var d = 0;
+
+//kaiten1~3を１つの関数で動かせる
+//つまみの向き→左:赤、中央:白、右:緑
+y=550;
+var z = [0,0,0];
+function kaitenAll(num,x){
+
+	sub_deg = z[num-1]+x;
+	if(sub_deg <= 60 && sub_deg >= -60){
+
+	  var e = document.getElementById("img" +num);
+
+		//回転
+	  z[num-1] = sub_deg;
+	  e.style.transform = "rotate(" + z[num-1] + "deg)";
+
+		//画像番号を進める
+		if (z[num-1] == 60){
+			cnt=1;
+		}else if(z[num-1] == 0){
+			cnt=0;
+		}else{
+			cnt=2;
+		}
+
+	  //画像を切り替える
+	  document.getElementById("lamp"+num).src=img[cnt].src;
+		console.log(y);
+	}
+}
+
+//$("#button5").click(function () {
+function sample() {
+
+		$("#img5")
+			.animate({marginLeft:'400px'},20000) //margin-topをキャメルケースで書く
+      .delay(3000)
+			.animate({marginLeft:'0px'},20000) //margin-topをキャメルケースで書く
+
+//setTimeout(kaitenAll(1,60), 500000);
+}
+	//});
+
+	$("#button6").click(function () {
+			$("#img5")
+				.animate({marginLeft:'400px'},1500) //margin-topをキャメルケースで書く
+	      .delay(3000)
+				.animate({marginLeft:'0px'},1500) //margin-topをキャメルケースで書く
+				//kaitenAll(1,60);
+
+		});
+
+		$("#button7").click(function () {
+				$("#img5")
+					.animate({marginLeft:'650px'},1500) //margin-topをキャメルケースで書く
+					.delay(3000)
+					.animate({marginLeft:'0px'},1500) //margin-topをキャメルケースで書く
+					//kaitenAll(1,60);
+
+			});
+
+  //setTimeout(50000);
+  //setTimeout(kaitenAll(1,60), 50000);
+sample();
+kaitenAll(1,60);
+kaitenAll(3,60);
+
+var sample = new Promise(function(resolve, reject) {
+    setTimeout(function() {
+        resolve();
+    }, 22000);
+});
+
+sample.then(function(value) {
+    console.log("Promise成功!");
+		kaitenAll(2,60);
+});
+
+console.log("先に出力");
+
+</script>
+</body>
+</html>
