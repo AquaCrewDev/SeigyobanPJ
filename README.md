@@ -1,4 +1,4 @@
-# 🚀 Switch Robot Simulation with MQTT連携（Choreonoidベース）
+# Switch Robot Simulation with MQTT連携（Choreonoidベース）
 
 本プロジェクトは、Choreonoidを用いたスイッチ操作ロボットのシミュレーション環境において、MQTT通信を活用した遠隔操作の検証を目的としています。
 
