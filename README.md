@@ -1,21 +1,37 @@
-シミュレーション実行およびMQTT連携の概要
+# 🚀 Switch Robot Simulation with MQTT連携（Choreonoidベース）
 
-本プロジェクトでは、Choreonoidのプロジェクトファイル switchRobotSimu_MQTT_ver.cnoid を読み込んだうえで、以下の3つのコントローラプログラムをビルドし、それぞれの .so ファイルをChoreonoidのコントローラとして適用し、シミュレーションを実行します。
-1. ビルド対象のコントローラソースファイル
+本プロジェクトは、**Choreonoid**を用いたスイッチ操作ロボットのシミュレーション環境において、**MQTT通信を活用した遠隔操作**の検証を目的としています。
 
-    CameraSample2.cpp
+---
 
-    MQAutoBoxController3.cpp
+## 📁 システム構成概要
 
-    CylinderLightController2.cpp
+### 🔧 使用プロジェクトファイル
+switchRobotSimu_MQTT_ver.cnoid
 
-各 .cpp ファイルをビルドして生成される .so（共有ライブラリ）を、それぞれ対応するロボットコンポーネントのコントローラに設定します。
-MQTT通信による遠隔操作
 
-フロントエンドとして、front_lamp2024/js/mobile_robot_ver2.js を使用しています。
-このJavaScriptファイル内に AWS IoT Core のエンドポイント、Access Key、Secret Access Key を設定することで、WebブラウザとChoreonoid間でMQTT通信が可能となり、遠隔操作を実現します。
-必要な設定項目（mobile_robot_ver2.js）
+### 🧩 ビルド対象のコントローラ（C++）
 
+以下のコントローラをビルドし、`.so`（共有ライブラリ）としてChoreonoidに読み込ませます。
+
+- `CameraSample2.cpp`
+- `MQAutoBoxController3.cpp`
+- `CylinderLightController2.cpp`
+
+各コントローラは、対応するロボットコンポーネントに割り当てられ、動作を制御します。
+
+---
+
+## 🌐 MQTT通信による遠隔操作
+
+### 📱 使用フロントエンド
+front_lamp2024/js/mobile_robot_ver2.js
+
+本JavaScriptファイルにAWS IoT Coreの設定情報を記述することで、Webブラウザ経由のMQTT通信によるロボット遠隔操作を実現します。
+
+#### 🔧 設定項目（※開発環境用）
+
+```javascript
 const awsIotConfig = {
   endpoint: "XXXXXXXXXXX-ats.iot.ap-northeast-1.amazonaws.com",
   region: "ap-northeast-1",
@@ -23,19 +39,24 @@ const awsIotConfig = {
   secretAccessKey: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
   topic: "choreonoid/remote-control"
 };
+⚠️ 注意
+AWS認証情報のコード内への直書きはセキュリティ上危険です。
+本番環境では、署名付きWebSocket や Amazon Cognito を用いた安全な認証手法の利用を推奨します。
 
-    ⚠️ AWS認証情報はセキュリティの観点からコードに直書きしないことが推奨されます。本番環境では署名付きWebSocketや Cognito を検討してください。
+🏃‍♂️ 実行手順（概要）
+各 .cpp ソースファイルをビルドし、.so を生成
 
-実行の流れ（概要）
+Choreonoidで switchRobotSimu_MQTT_ver.cnoid を開く
 
-    CameraSample2.cpp などの各ソースをビルドし .so を生成
+各コンポーネントに対応する .so を設定
 
-    switchRobotSimu_MQTT_ver.cnoid をChoreonoidで開く
+mobile_robot_ver2.js にAWS設定情報を記入
 
-    各コントローラに生成した .so を設定
+Webブラウザでインターフェースを起動、MQTT通信を開始
 
-    mobile_robot_ver2.js にAWS IoT Coreの設定を入力
+Choreonoidシミュレーションを起動し、双方向通信の動作確認
 
-    ブラウザからWebインターフェースを開いてMQTT通信を開始
+💬 補足情報
+MQTTブローカーにはAWS IoT Coreを使用しています。
 
-    Choreonoidシミュレーションを起動して、双方向通信の確認
+シミュレーション内で仮想ジョイスティックの入力を受け取り、実際にスイッチやボタン操作を行う一連の流れを再現しています。
