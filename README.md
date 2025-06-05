@@ -10,7 +10,7 @@
 switchRobotSimu_MQTT_ver.cnoid
 
 
-### 🧩 ビルド対象のコントローラ（C++）
+### ビルド対象のコントローラ（C++）
 
 以下のコントローラをビルドし、`.so`（共有ライブラリ）としてChoreonoidに読み込ませます。
 
@@ -22,9 +22,9 @@ switchRobotSimu_MQTT_ver.cnoid
 
 ---
 
-## 🌐 MQTT通信による遠隔操作
+##  MQTT通信による遠隔操作
 
-### 📱 使用フロントエンド
+###  使用フロントエンド
 front_lamp2024/js/mobile_robot_ver2.js
 
 本JavaScriptファイルにAWS IoT Coreの設定情報を記述することで、Webブラウザ経由のMQTT通信によるロボット遠隔操作を実現します。
