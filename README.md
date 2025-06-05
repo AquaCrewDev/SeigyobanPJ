@@ -61,11 +61,7 @@ MQTTブローカーにはAWS IoT Coreを使用しています。
 
 シミュレーション内で仮想ジョイスティックの入力を受け取り、実際にスイッチやボタン操作を行う一連の流れを再現しています。
 
-📎 ライセンス（BSD 2-Clause License）
-BSD 2-Clause License
-
-Copyright (c) 2020, jadsys
-All rights reserved.
+###ライセンス（BSD 2-Clause License）
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
