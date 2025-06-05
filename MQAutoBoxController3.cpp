@@ -29,14 +29,14 @@ class MQAutoBoxController3 : public SimpleController
     double timer = 0.0;   
     double moveDistance = 0.0;  
 
-    // MQTT関連
-    const std::string SERVER_ADDRESS{"ssl://a3o0r3on150edr-ats.iot.ap-northeast-1.amazonaws.com:8883"};
+    // MQTT関連セッティング
+    const std::string SERVER_ADDRESS{""};
     const std::string CLIENT_ID{"test"};
     const std::string TOPIC{"test"};
 
-    const std::string CA_CERT_PATH{"/home/aquacrew2/aqua_aws_setting/AmazonRootCA1.pem"};
-    const std::string CLIENT_CERT_PATH{"/home/aquacrew2/aqua_aws_setting/00962ca4ef67e4bfd61f6d7281e9fce21556e22305c70b7c9834dd659374ee52-certificate.pem.crt"};
-    const std::string PRIVATE_KEY_PATH{"/home/aquacrew2/aqua_aws_setting/00962ca4ef67e4bfd61f6d7281e9fce21556e22305c70b7c9834dd659374ee52-private.pem.key"};
+    const std::string CA_CERT_PATH{""};
+    const std::string CLIENT_CERT_PATH{""};
+    const std::string PRIVATE_KEY_PATH{""};
 
     mqtt::client* client = nullptr;
     mqtt::callback* mqttCallback = nullptr; // コールバックオブジェクトをメンバーとして保持
