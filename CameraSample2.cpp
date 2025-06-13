@@ -40,13 +40,13 @@ class CameraSample2 : public SimpleController
     time_point<steady_clock> lastSaveTime;
 
     mqtt::async_client* mqttClient;
-    const std::string SERVER_ADDRESS{"ssl://a3o0r3on150edr-ats.iot.ap-northeast-1.amazonaws.com:8883"};
-    const std::string CLIENT_ID{"camera_lamp_controller"};
-    const std::string TOPIC{"robot_project/aki150103/lamp_virtual"};
+    const std::string SERVER_ADDRESS{""};
+    const std::string CLIENT_ID{""};
+    const std::string TOPIC{""};
 
-    const std::string CA_CERT_PATH{"/home/aquacrew2/aqua_aws_setting/AmazonRootCA1.pem"};
-    const std::string CLIENT_CERT_PATH{"/home/aquacrew2/aqua_aws_setting/00962ca4ef67e4bfd61f6d7281e9fce21556e22305c70b7c9834dd659374ee52-certificate.pem.crt"};
-    const std::string PRIVATE_KEY_PATH{"/home/aquacrew2/aqua_aws_setting/00962ca4ef67e4bfd61f6d7281e9fce21556e22305c70b7c9834dd659374ee52-private.pem.key"};
+    const std::string CA_CERT_PATH{""};
+    const std::string CLIENT_CERT_PATH{""};
+    const std::string PRIVATE_KEY_PATH{""};
 
     bool isConnected = false;
     std::thread publisherThread;
